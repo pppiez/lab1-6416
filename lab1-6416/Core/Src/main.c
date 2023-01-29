@@ -84,7 +84,8 @@ uint16_t MyID[] = {
 
 uint16_t ButtonMatrix = 0;
 uint16_t BackupMatrix = 0;
-uint8_t countIDcorrect = 0;
+uint8_t countinput = 0;
+uint8_t flag = 0;
 
 /* USER CODE END PV */
 
@@ -149,27 +150,36 @@ int main(void)
 		// read matrix
 		register int j;
 		for(j=0;j<4;j++){
-		  ReadMatrixButton_1Row();
+			ReadMatrixButton_1Row();
 		}
-
-		if((ButtonMatrix == MyID[countIDcorrect]) && BackupMatrix == 0 && countIDcorrect <= 10){
-			countIDcorrect = countIDcorrect + 1;
+		if(BackupMatrix == 0 && ButtonMatrix != 0 && flag <= 10 && (ButtonMatrix != 0b10000000000000)){
+			countinput++;
+			if(ButtonMatrix == MyID[countinput-1]){
+				flag = flag + 1;
+			}
 		}
+	  }
 
 		// Check ok
-		if((ButtonMatrix == 0b1000000000000000) && (countIDcorrect == 11)){
-			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET); // LD2 ติด
-			  countIDcorrect = 0;
+		if((ButtonMatrix == 0b1000000000000000) && (flag == 11) && (BackupMatrix == 0)){
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET); // LD2 ติด
+			countinput = 0;
+			flag = 0;
+		}
+
+		// Check backspace
+		if((ButtonMatrix == 0b10000000000000) &&(BackupMatrix == 0)){
+			countinput--;
 		}
 
 		// Check clear
-		if(ButtonMatrix == 0b1000000000000){
-			countIDcorrect = 0;
+		if((ButtonMatrix == 0b1000000000000) && (BackupMatrix == 0)){
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET); // LD2 ดับ
-			countIDcorrect = 0;
+			countinput = 0;
+			flag = 0;
 		}
 		BackupMatrix = ButtonMatrix; // update
-	  }
+
   }
   /* USER CODE END 3 */
 }
