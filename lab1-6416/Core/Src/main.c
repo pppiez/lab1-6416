@@ -66,7 +66,27 @@ struct PortPin L[4] = {
 
 };
 
+uint16_t MyID[] = {
+	// 64340500016
+	0b1000000000, //6
+	0b10, //4
+	0b10000000000, //3
+	0b10, //4
+	0b1000, // 0
+	0b100000, // 5
+	0b1000, // 0
+	0b1000, // 0
+	0b1000, // 0
+	0b100, // 1
+	0b1000000000 //6
+};
+
+
 uint16_t ButtonMatrix = 0;
+uint16_t BackupMatrix = 0;
+uint8_t countIDcorrect = 0;
+uint8_t round = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -126,11 +146,19 @@ int main(void)
 	  if(HAL_GetTick() >= timestamp)
 	  {
 		timestamp = HAL_GetTick() + 100;
+
 		// read matrix
 		register int j;
-		for(j=0;j<4;j++){
-		  ReadMatrixButton_1Row();
-		}
+			for(j=0;j<4;j++){
+			  ReadMatrixButton_1Row();
+			}
+			if((ButtonMatrix == MyID[round]) && BackupMatrix == 0 && round <= 10){
+				countIDcorrect = countIDcorrect + 1;
+			}
+			if(ButtonMatrix != 0 && BackupMatrix == 0){
+					round = round + 1;
+				}
+			BackupMatrix = ButtonMatrix;
 	  }
   }
   /* USER CODE END 3 */
