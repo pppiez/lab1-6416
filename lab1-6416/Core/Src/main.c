@@ -149,16 +149,30 @@ int main(void)
 
 		// read matrix
 		register int j;
-			for(j=0;j<4;j++){
-			  ReadMatrixButton_1Row();
+		for(j=0;j<4;j++){
+		  ReadMatrixButton_1Row();
+		}
+
+		if((ButtonMatrix == MyID[round]) && BackupMatrix == 0 && round <= 10){
+			countIDcorrect = countIDcorrect + 1;
+		}
+
+		if(ButtonMatrix != 0 && BackupMatrix == 0){
+				round = round + 1;
 			}
-			if((ButtonMatrix == MyID[round]) && BackupMatrix == 0 && round <= 10){
-				countIDcorrect = countIDcorrect + 1;
-			}
-			if(ButtonMatrix != 0 && BackupMatrix == 0){
-					round = round + 1;
-				}
-			BackupMatrix = ButtonMatrix;
+		// Check ok
+		if((ButtonMatrix == 0b1000000000000000) && (countIDcorrect == 11)){
+			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET); // LD2 ติด
+			  round = 0;
+		}
+
+		// Check clear
+		if(ButtonMatrix == 0b1000000000000){
+			countIDcorrect = 0;
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET); // LD2 ดับ
+			round = 0;
+		}
+		BackupMatrix = ButtonMatrix; // update
 	  }
   }
   /* USER CODE END 3 */
