@@ -85,7 +85,6 @@ uint16_t MyID[] = {
 uint16_t ButtonMatrix = 0;
 uint16_t BackupMatrix = 0;
 uint8_t countIDcorrect = 0;
-uint8_t round = 0;
 
 /* USER CODE END PV */
 
@@ -153,24 +152,21 @@ int main(void)
 		  ReadMatrixButton_1Row();
 		}
 
-		if((ButtonMatrix == MyID[round]) && BackupMatrix == 0 && round <= 10){
+		if((ButtonMatrix == MyID[countIDcorrect]) && BackupMatrix == 0 && countIDcorrect <= 10){
 			countIDcorrect = countIDcorrect + 1;
 		}
 
-		if(ButtonMatrix != 0 && BackupMatrix == 0){
-				round = round + 1;
-			}
 		// Check ok
 		if((ButtonMatrix == 0b1000000000000000) && (countIDcorrect == 11)){
 			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET); // LD2 ติด
-			  round = 0;
+			  countIDcorrect = 0;
 		}
 
 		// Check clear
 		if(ButtonMatrix == 0b1000000000000){
 			countIDcorrect = 0;
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET); // LD2 ดับ
-			round = 0;
+			countIDcorrect = 0;
 		}
 		BackupMatrix = ButtonMatrix; // update
 	  }
