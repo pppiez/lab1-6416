@@ -125,10 +125,13 @@ int main(void)
 	  static uint32_t timestamp = 0;
 	  if(HAL_GetTick() >= timestamp)
 	  {
-		  timestamp = HAL_GetTick() + 100;
+		timestamp = HAL_GetTick() + 100;
+		// read matrix
+		register int j;
+		for(j=0;j<4;j++){
 		  ReadMatrixButton_1Row();
+		}
 	  }
-
   }
   /* USER CODE END 3 */
 }
@@ -289,6 +292,8 @@ void ReadMatrixButton_1Row()
 		if(HAL_GPIO_ReadPin(L[i].PORT, L[i].PIN) == 1)
 		{
 			ButtonMatrix &= ~(1<<(X*4+i));
+			// x = 0
+			// ~(1<<(X*4+i)) = ~(1<<(0*4+1)) = ~(1<<1) = ~(00000010) = 11111101
 		}
 		else
 		{
