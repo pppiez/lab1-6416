@@ -66,7 +66,7 @@ struct PortPin L[4] = {
 
 };
 
-uint16_t MyID[] = {
+uint16_t MyID[11] = {
 	// 64340500016
 	0b1000000000, //6
 	0b10, //4
@@ -94,6 +94,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
+void ReadMatrixButton_1Row();
 
 /* USER CODE END PFP */
 
@@ -163,8 +164,6 @@ int main(void)
 		// Check ok
 		if((ButtonMatrix == 0b1000000000000000) && (flag == 11) && (BackupMatrix == 0)){
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET); // LD2 ติด
-			countinput = 0;
-			flag = 0;
 		}
 
 		// Check backspace
@@ -337,15 +336,19 @@ void ReadMatrixButton_1Row()
 	register int i;
 	for(i=0;i<4;i++)
 	{
-		if(HAL_GPIO_ReadPin(L[i].PORT, L[i].PIN) == 1)
+		if(HAL_GPIO_ReadPin(L[i].PORT, L[i].PIN) == 1)// HIGH ไม่โดนกด
 		{
 			ButtonMatrix &= ~(1<<(X*4+i));
-			// x = 0
+			// x = 0 , i = 1
 			// ~(1<<(X*4+i)) = ~(1<<(0*4+1)) = ~(1<<1) = ~(00000010) = 11111101
+			// อะไร and กับ 1 ได้ตัวเดิม
 		}
 		else
 		{
-			ButtonMatrix |= 1<<(X*4+i);
+			ButtonMatrix |= 1<<(X*4+i); // LOW โดนกด
+			// อะไร or กับ 0 ได้ตัวเดิม
+			// x = 0, i = 2
+			// 1<<(0*4+2) =  1<<2 = 0000000000000100 | 0000000000000000
 		}
 	}
 	// Set RX

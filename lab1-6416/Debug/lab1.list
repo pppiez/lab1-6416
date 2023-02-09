@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  00020064  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00007754  00000000  00000000  00020094  2**0
+ 12 .debug_info   0000773c  00000000  00000000  00020094  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 000012df  00000000  00000000  000277e8  2**0
+ 13 .debug_abbrev 000012c7  00000000  00000000  000277d0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000610  00000000  00000000  00028ac8  2**3
+ 14 .debug_aranges 00000610  00000000  00000000  00028a98  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 000005a8  00000000  00000000  000290d8  2**3
+ 15 .debug_ranges 000005a8  00000000  00000000  000290a8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00014855  00000000  00000000  00029680  2**0
+ 16 .debug_macro  00014855  00000000  00000000  00029650  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00007612  00000000  00000000  0003ded5  2**0
+ 17 .debug_line   00007612  00000000  00000000  0003dea5  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0008190f  00000000  00000000  000454e7  2**0
+ 18 .debug_str    0008190f  00000000  00000000  000454b7  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  000c6df6  2**0
+ 19 .comment      00000050  00000000  00000000  000c6dc6  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000017c8  00000000  00000000  000c6e48  2**2
+ 20 .debug_frame  000017c8  00000000  00000000  000c6e18  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -973,7 +973,7 @@ void ReadMatrixButton_1Row()
  8000890:	2400      	movs	r4, #0
  8000892:	e031      	b.n	80008f8 <ReadMatrixButton_1Row+0x6c>
 	{
-		if(HAL_GPIO_ReadPin(L[i].PORT, L[i].PIN) == 1)
+		if(HAL_GPIO_ReadPin(L[i].PORT, L[i].PIN) == 1)// HIGH ไม่โดนกด
  8000894:	4b38      	ldr	r3, [pc, #224]	; (8000978 <ReadMatrixButton_1Row+0xec>)
  8000896:	f853 2034 	ldr.w	r2, [r3, r4, lsl #3]
  800089a:	4937      	ldr	r1, [pc, #220]	; (8000978 <ReadMatrixButton_1Row+0xec>)
@@ -1006,12 +1006,12 @@ void ReadMatrixButton_1Row()
  80008d0:	4b2b      	ldr	r3, [pc, #172]	; (8000980 <ReadMatrixButton_1Row+0xf4>)
  80008d2:	801a      	strh	r2, [r3, #0]
  80008d4:	e00f      	b.n	80008f6 <ReadMatrixButton_1Row+0x6a>
-			// x = 0
 			// ~(1<<(X*4+i)) = ~(1<<(0*4+1)) = ~(1<<1) = ~(00000010) = 11111101
+			// อะไร and กับ 1 ได้ตัวเดิม
 		}
 		else
 		{
-			ButtonMatrix |= 1<<(X*4+i);
+			ButtonMatrix |= 1<<(X*4+i); // LOW โดนกด
  80008d6:	4b29      	ldr	r3, [pc, #164]	; (800097c <ReadMatrixButton_1Row+0xf0>)
  80008d8:	781b      	ldrb	r3, [r3, #0]
  80008da:	009b      	lsls	r3, r3, #2
@@ -1031,6 +1031,8 @@ void ReadMatrixButton_1Row()
  80008f6:	3401      	adds	r4, #1
  80008f8:	2c03      	cmp	r4, #3
  80008fa:	ddcb      	ble.n	8000894 <ReadMatrixButton_1Row+0x8>
+			// x = 0, i = 2
+			// 1<<(0*4+2) =  1<<2 = 0000000000000100 | 0000000000000000
 		}
 	}
 	// Set RX
